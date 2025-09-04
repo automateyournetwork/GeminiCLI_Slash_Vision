@@ -1,0 +1,19 @@
+name = "/vision:capture"
+description = "Capture one frame (save to disk and return base64 + path)"
+
+prompt = """
+You have the tools: vision_status, vision_capture.
+
+Behavior:
+1) Ensure the camera is open:
+   - Call vision_status(); if not open, print "Camera closed — run /vision:start" and stop.
+2) Parse optional key=value args:
+   - save_dir:str (default "~/.vision_frames")
+   - format:str   (default "jpg"; allowed: "jpg","png")
+3) Call vision_capture(...) once with provided args.
+4) Print:
+   - "Saved: <path>  (mime=..., size=widthxheight)"
+   - Do NOT dump base64 inline; just note that base64 was returned.
+
+On error, print the error message concisely.
+"""

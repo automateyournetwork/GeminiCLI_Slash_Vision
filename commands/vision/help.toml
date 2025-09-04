@@ -1,0 +1,22 @@
+name = "/vision"
+description = "Show Vision MCP help and quick usage"
+
+prompt = """
+Vision (webcam stills via MCP)
+------------------------------
+Subcommands:
+• /vision:devices                   List available cameras with basic props.
+• /vision:start [key=value ...]     Open a camera (index,width,height,fps,backend).
+• /vision:status                    Show camera state and properties.
+• /vision:capture [save_dir=... format=jpg|png]
+                                    Grab one frame (returns path + base64).
+• /vision:burst [n=5 period_ms=200 save_dir=... format=jpg|png]
+                                    Capture N frames spaced by period_ms (if supported).
+• /vision:stop                      Release the camera.
+
+Examples:
+• /vision:devices
+• /vision:start camera_index=0 backend=avfoundation width=640 height=480 fps=15
+• /vision:capture
+• /vision:stop
+"""
