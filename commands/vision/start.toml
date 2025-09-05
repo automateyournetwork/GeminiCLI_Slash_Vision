@@ -22,11 +22,19 @@ Output:
 - On failure, show the error and suggest trying a different backend.
 
 Then call vision_start(...) once with the parsed args.
+
+[defaults]
+camera_index = 0
+width = 1920
+height = 1080
+fps = 15
+backend = "auto"
+
 """
 
 [defaults]
 camera_index = 0
-width = 640
-height = 480
+width = 1920
+height = 1080
 fps = 15
 backend = "auto"

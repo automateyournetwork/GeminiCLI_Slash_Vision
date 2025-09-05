@@ -1,0 +1,67 @@
+name = "/vision:asl"
+description = "Capture a ~10s burst, sample every other frame, and emit '@f0 @f2 … <instruction>'."
+
+prompt = '''
+You have the tools: vision_status, vision_burst.
+
+Behavior:
+1) Call vision_status(). If open=false, print "Camera closed — run /vision:start" and stop.
+
+2) Call vision_burst(n={{n}}, period_ms={{period_ms}}, duration_ms={{duration_ms}}, save_dir=".", format="{{format}}").
+   Bind returned array of paths into {{paths}} (newline-joined).
+
+3) From {{paths}}, strip directories so only bare filenames remain.
+   - Keep every other frame (stride=2).
+   - Build one line that starts with all attachments: "@f0 @f2 @f4 … " followed by <INSTRUCTION>.
+
+4) INSTRUCTION is hard-coded:
+   "You are an ASL interpreter. Analyze ONLY the attached photo sequence (left to right is chronological). Transcribe the user's signing into clear, grammatical English. If unsure about a word, fingerspell it in ALL CAPS in brackets. Output ONLY the transcript text."
+
+5) IMPORTANT: Gemini-CLI expects @file tokens *inside the prompt string* (after -p or -i). Do NOT pass @files as positional argv. The correct structure is:
+   gemini -p "@f0.jpg @f2.jpg @f4.jpg <INSTRUCTION>"
+
+6) Take all screenshots and the instruction and pass them to Gemini one-shot mode using the shell below.
+
+!{
+# inputs from your macro
+PATHS_RAW="{{paths}}"
+INSTR="You are an ASL interpreter. Analyze ONLY the attached photo sequence (left to right is chronological). Transcribe the user's signing into clear, grammatical English. If unsure about a word, fingerspell it in ALL CAPS in brackets. Output ONLY the transcript text."
+
+# Build a list of bare filenames, taking every other frame (stride=2)
+files=()
+take=1
+while IFS= read -r P; do
+  [ -z "$P" ] && continue
+  if [ $take -eq 1 ]; then
+    F=${P##*/}          # strip directories; use F="$P" if not running in save_dir
+    files+=("@$F")      # prepend @ per Gemini-CLI attachment token
+    take=0
+  else
+    take=1
+  fi
+done <<'EOF'
+$PATHS_RAW
+EOF
+
+# Join files into a single prefix: "@f0 @f2 @f4 "
+prefix=""
+for f in "${files[@]}"; do
+  prefix="$prefix$f "
+done
+
+# One-shot (non-interactive) run (attachment tokens must be INSIDE the prompt):
+gemini -p "${prefix}${INSTR}"
+
+# If you want to remain interactive after the first turn:
+# gemini -i "${prefix}${INSTR}"
+
+# If you ever hit "argument list too long", stream via stdin instead:
+# { printf '%s ' "${files[@]}"; printf '%s' "$INSTR"; } | gemini
+}
+'''
+
+[defaults]
+format      = "jpg"
+n           = 0
+period_ms   = 150
+duration_ms = 10000
