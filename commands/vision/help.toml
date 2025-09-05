@@ -12,11 +12,15 @@ Subcommands:
                                     Grab one frame (returns path + base64).
 • /vision:burst [n=5 period_ms=200 save_dir=... format=jpg|png]
                                     Capture N frames spaced by period_ms (if supported).
+• /vision:asl [duration_ms=10000 period_ms=150 format=jpg]
+                                    Capture ~10s, keep every other frame, then send @files + ASL instruction to Gemini (one-shot).
 • /vision:stop                      Release the camera.
 
 Examples:
 • /vision:devices
 • /vision:start camera_index=0 backend=avfoundation width=640 height=480 fps=15
 • /vision:capture
+• /vision:burst n=8 period_ms=200 format=jpg
+• /vision:asl duration_ms=10000
 • /vision:stop
 """
