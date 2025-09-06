@@ -15,8 +15,7 @@ Behavior:
 
 3) Call vision_capture(...). Remember 'path' as CAPTURED_PATH.
 
-4) If prompt is empty:
-     Print: "Saved: <CAPTURED_PATH>  (mime=..., size=WxH)" and stop.
+4) If prompt is empty use "What can you tell me about this caputure?" as the prompt
 
 5) If prompt present:
      Choose SEND_NAME:
